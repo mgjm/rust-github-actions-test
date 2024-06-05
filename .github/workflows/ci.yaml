@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # test:
+  #   name: ${{ matrix.cmd.name }} (Rust ${{ matrix.rust }})
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       rust:
+  #         - stable
+  #       cmd:
+  #         - name: Test
+  #           run: cargo test --locked
+  #         - name: Clippy
+  #           run: cargo clippy --locked --tests -- -D warnings
+  #   timeout-minutes: 45
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup rust
+  #       run: |
+  #         rustup toolchain install ${{ matrix.rust }} --profile minimal --no-self-update
+  #     - name: ${{ matrix.cmd.name }}
+  #       run: ${{ matrix.cmd.run }}
+
+  build:
+    name: Build for ${{ matrix.target.name }}
+    runs-on: ${{ matrix.target.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: Linux (x86_64)
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            pre-build: |
+              sudo apt-get install -y libudev-dev
+          - name: Windows (x86_64)
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: .exe
+          - name: MacOS (x86_64)
+            runs-on: macos-latest
+            target: x86_64-apple-darwin
+          - name: MacOS (arm64)
+            runs-on: macos-latest
+            target: aarch64-apple-darwin
+    timeout-minutes: 45
+    # env:
+    #   RUSTFLAGS: -C target-feature=+crt-static
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup rust
+        run: |
+          rustup toolchain install stable --target ${{ matrix.target.target }} --profile minimal --no-self-update
+      - name: Install build dependencies
+        run: ${{ matrix.target.pre-build }}
+        if: ${{ matrix.target.pre-build }}
+      - name: Build for ${{ matrix.target.name }}
+        run: cargo build --locked --release --target ${{ matrix.target.target }}
+      - name: Run for ${{ matrix.target.name }}
+        run: cargo run --locked --release --target ${{ matrix.target.target }}
+      - name: Check file
+        run: |
+          file target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
+          stat target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rust-github-actions-test.${{ matrix.target.target }}${{ matrix.target.ext }}
+          path: target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
+          if-no-files-found: error
