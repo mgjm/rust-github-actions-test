@@ -13,27 +13,29 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # test:
-  #   name: ${{ matrix.cmd.name }} (Rust ${{ matrix.rust }})
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       rust:
-  #         - stable
-  #       cmd:
-  #         - name: Test
-  #           run: cargo test --locked
-  #         - name: Clippy
-  #           run: cargo clippy --locked --tests -- -D warnings
-  #   timeout-minutes: 45
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Setup rust
-  #       run: |
-  #         rustup toolchain install ${{ matrix.rust }} --profile minimal --no-self-update
-  #     - name: ${{ matrix.cmd.name }}
-  #       run: ${{ matrix.cmd.run }}
+  test:
+    name: ${{ matrix.cmd.name }} (Rust ${{ matrix.rust }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust:
+          - stable
+        cmd:
+          - name: Test
+            run: cargo test --locked
+          - name: Clippy
+            run: cargo clippy --locked --tests -- -D warnings
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup rust
+        run: |
+          rustup toolchain install ${{ matrix.rust }} --profile minimal --no-self-update
+      - name: Install build dependencies
+        run: sudo apt-get install -y libudev-dev
+      - name: ${{ matrix.cmd.name }}
+        run: ${{ matrix.cmd.run }}
 
   build:
     name: Build for ${{ matrix.target.name }}
@@ -47,16 +49,16 @@ jobs:
             target: x86_64-unknown-linux-gnu
             pre-build: |
               sudo apt-get install -y libudev-dev
-          # - name: Windows (x86_64)
-          #   runs-on: windows-latest
-          #   target: x86_64-pc-windows-msvc
-          #   ext: .exe
-          # - name: MacOS (x86_64)
-          #   runs-on: macos-latest
-          #   target: x86_64-apple-darwin
-          # - name: MacOS (arm64)
-          #   runs-on: macos-latest
-          #   target: aarch64-apple-darwin
+          - name: Windows (x86_64)
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: .exe
+          - name: MacOS (x86_64)
+            runs-on: macos-latest
+            target: x86_64-apple-darwin
+          - name: MacOS (arm64)
+            runs-on: macos-latest
+            target: aarch64-apple-darwin
     timeout-minutes: 45
     # env:
     #   RUSTFLAGS: -C target-feature=+crt-static
@@ -70,8 +72,6 @@ jobs:
         if: ${{ matrix.target.pre-build }}
       - name: Build for ${{ matrix.target.name }}
         run: cargo build --locked --release --target ${{ matrix.target.target }}
-      - name: Run for ${{ matrix.target.name }}
-        run: cargo run --locked --release --target ${{ matrix.target.target }}
       - name: Check file
         run: |
           file target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
@@ -84,10 +84,12 @@ jobs:
           if-no-files-found: error
 
   release:
-    name: Update release
+    name: Create release
     permissions:
       contents: write
-    needs: build
+    needs:
+      - test
+      - build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -95,7 +97,8 @@ jobs:
         with:
           pattern: rust-github-actions-test.*
           merge-multiple: true
-      - run: find -exec ls -ld {} +
+      - name: List artifacts
+        run: find -exec ls -ld {} +
       - uses: actions/github-script@v7
         id: upload-release-asset
         with:
