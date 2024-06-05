@@ -2,7 +2,7 @@
 
 fn main() {
     println!(
-        "Hello, world!: {:?} {:?}",
+        "Hello, world V2!: {:?} {:?}",
         std::path::MAIN_SEPARATOR,
         std::env::current_dir().unwrap(),
     );
