@@ -3,5 +3,14 @@ name = "rust-github-actions-test"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "rust-github-actions-test"
+required-features = ["cli"]
+
+[features]
+default = ["example"]
+example = []
+cli = ["example"]
+
 [dependencies]
 hidapi = "2.6.1"
