@@ -1,5 +1,7 @@
 #![warn(clippy::all, clippy::pedantic)]
 
+use rust_github_actions_test::foo;
+
 fn main() {
     println!(
         "Hello, world V2!: {:?} {:?}",
@@ -27,14 +29,4 @@ fn main() {
         }
         Err(err) => eprintln!("Error: {err:?}"),
     }
-}
-
-#[cfg(target_feature = "crt-static")]
-fn foo() {
-    println!("the C runtime should be statically linked");
-}
-
-#[cfg(not(target_feature = "crt-static"))]
-fn foo() {
-    println!("the C runtime should be dynamically linked");
 }
