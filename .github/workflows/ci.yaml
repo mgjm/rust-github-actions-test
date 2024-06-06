@@ -82,11 +82,11 @@ jobs:
         run: |
           file target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
           stat target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
-          mv target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }} rust-github-actions-test.${{ matrix.target.target }}${{ matrix.target.ext }}
+          mv target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }} badgemagic.${{ matrix.target.target }}${{ matrix.target.ext }}
       - uses: actions/upload-artifact@v4
         with:
-          name: rust-github-actions-test.${{ matrix.target.target }}${{ matrix.target.ext }}
-          path: rust-github-actions-test.${{ matrix.target.target }}${{ matrix.target.ext }}
+          name: badgemagic.${{ matrix.target.target }}${{ matrix.target.ext }}
+          path: badgemagic.${{ matrix.target.target }}${{ matrix.target.ext }}
           if-no-files-found: error
 
   ready:
@@ -111,7 +111,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: rust-github-actions-test.*
+          pattern: badgemagic.*
           merge-multiple: true
       - name: List artifacts
         run: find -exec ls -ld {} +

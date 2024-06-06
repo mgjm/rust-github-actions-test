@@ -6,18 +6,16 @@ Library and CLI to configure LED badges.
 
 ## Installation
 
-As of now there are no releases of this tool.
+As of now there are no proper releases (with version numbers) of this tool.
 
-The latest commit on the main branch gets released automatically.
+The latest commit on the main branch just gets build and released automatically.
 
-You can download the latest version on the [release page](../../releases/latest). Depending on your operating system pick the matching file:
+Download the prebuild program for one of the following operating systems:
 
-Operating System | File
--|-
-Linux (GNU / 64 bit) | `badgemagic.x86_64-unknown-linux-gnu`
-Windows (64 bit) | `rust-github-actions-test.x86_64-pc-windows-msvc.exe `
-MacOS (Intel) | `rust-github-actions-test.x86_64-apple-darwin`
-MacOS (M1, etc.) | `rust-github-actions-test.aarch64-apple-darwin`
+- [Linux (GNU / 64 bit)](../../releaset/download/badgemagic.x86_64-unknown-linux-gnu)
+- [Windows (64 bit)](../../releases/latest/download/badgemagic.x86_64-pc-windows-msvc.exe)
+- [MacOS (Intel)](../../releases/latest/download/badgemagic.x86_64-apple-darwin)
+- [MacOS (M1, etc.)](../../releases/latest/download/badgemagic.aarch64-apple-darwin)
 
 ```sh
 # After the download rename the file to `badgemagic`
@@ -65,21 +63,25 @@ The above command will read your configuration from a file named `config.toml` i
 
 ## Configuration
 
-You can have a look at the example configurations in the [`demo` Directory](demo).
+You can have a look at the example configurations in the [`demo` directory](demo).
 
-The TOML configuration consits of up to 8 message sections starting with `[[message]]`.
+The TOML configuration consists of up to 8 message sections starting with `[[message]]`.
 
 Each message can have the following options:
 ```toml
 [[message]]
 # Enable blink mode
 blink = true
+
 # Show a dotted border arround the display
 border = true
+
 # Set the update speed of the animations (0 to 7)
 speed = 6
+
 # Set the display animation (left, right, up, down, center, fast, drop, curtain, laser)
 mode = "left"
+
 # The text to show on the display
 text = "Lorem ipsum dolor sit amet."
 ```
