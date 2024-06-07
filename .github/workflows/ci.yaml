@@ -14,6 +14,18 @@ env:
   RUSTFLAGS: -C link-arg=-s
 
 jobs:
+  format:
+    name: Check rust format
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup rust
+        run: |
+          rustup toolchain install nightly --profile minimal --component rustfmt --no-self-update
+      - name: Run cargo fmt
+        run: cargo +nightly fmt --check
+
   test:
     name: ${{ matrix.cmd.name }} (Rust ${{ matrix.rust }}) ${{ matrix.features }}
     runs-on: ubuntu-latest
@@ -83,6 +95,8 @@ jobs:
           file target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
           stat target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }}
           mv target/${{ matrix.target.target }}/release/rust-github-actions-test${{ matrix.target.ext }} badgemagic.${{ matrix.target.target }}${{ matrix.target.ext }}
+      - name: Run for ${{ matrix.target.name }}
+        run: ./badgemagic.${{ matrix.target.target }}${{ matrix.target.ext }} --help
       - uses: actions/upload-artifact@v4
         with:
           name: badgemagic.${{ matrix.target.target }}${{ matrix.target.ext }}
@@ -92,6 +106,7 @@ jobs:
   ready:
     name: All required checks passed
     needs:
+      - format
       - test
       - build
     runs-on: ubuntu-latest
@@ -104,6 +119,7 @@ jobs:
     permissions:
       contents: write
     needs:
+      - format
       - test
       - build
     runs-on: ubuntu-latest

@@ -12,7 +12,7 @@ The latest commit on the main branch just gets build and released automatically.
 
 Download the prebuild program for one of the following operating systems:
 
-- [Linux (GNU / 64 bit)](../../releaset/download/badgemagic.x86_64-unknown-linux-gnu)
+- [Linux (GNU / 64 bit)](../../releases/download/badgemagic.x86_64-unknown-linux-gnu)
 - [Windows (64 bit)](../../releases/latest/download/badgemagic.x86_64-pc-windows-msvc.exe)
 - [MacOS (Intel)](../../releases/latest/download/badgemagic.x86_64-apple-darwin)
 - [MacOS (M1, etc.)](../../releases/latest/download/badgemagic.aarch64-apple-darwin)
@@ -93,7 +93,7 @@ mode = "center"
 text = "Hello"
 ```
 
-If you want you can "draw" images as ascii art (`_` = Off, `X` = On):
+If you want you can "draw" images as ASCII art (`_` = Off, `X` = On):
 ```toml
 [[message]]
 mode = "center"

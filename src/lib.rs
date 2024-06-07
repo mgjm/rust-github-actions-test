@@ -11,3 +11,8 @@ pub fn foo() {
 pub fn foo() {
     println!("the C runtime should be dynamically linked");
 }
+
+#[cfg(feature = "cli")]
+pub mod cli {
+    include!(concat!(env!("OUT_DIR"), "/cli.rs"));
+}
